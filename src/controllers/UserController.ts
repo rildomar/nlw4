@@ -1,12 +1,12 @@
-import  {Request, Response} from 'express';
-import { getRepository } from 'typeorm';
-import { User } from '../models/User';
+import { Request, Response } from 'express';
+import { getCustomRepository } from 'typeorm';
+import { UserRepository } from '../repositories/UserReporistory';
 
 class UserController {
     
     async getall (req: Request, res: Response) {
         //Cria o repository do modelo que estou passando. Próprio do typeOrm..
-        const userRepository = getRepository(User);
+        const userRepository = getCustomRepository(UserRepository);
 
         const userFinded = await userRepository.find();
 
@@ -16,14 +16,13 @@ class UserController {
             })
         }
 
-        res.json(userFinded);
-
+        res.status(200).json(userFinded);
     }
 
     // Função que irá inserir o dado no banco de dados.
     async create(req: Request, res: Response) {
         //Cria o repository do modelo que estou passando. Próprio do typeOrm..
-        const userRepository = getRepository(User);
+        const userRepository = getCustomRepository(UserRepository);
         
         const { name, email } = req.body;
 
@@ -45,8 +44,8 @@ class UserController {
         await userRepository.save(userCreated);
 
         // Retorna usuário criado;
-        return res.json(userCreated);
+        return res.status(201).json(userCreated);
     }
 }
 
-export { UserController }
+export { UserController };
