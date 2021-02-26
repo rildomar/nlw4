@@ -1,5 +1,7 @@
 import nodemailer, { Transporter } from 'nodemailer';
-
+import { resolve } from 'path';
+import handlebards from 'handlebars';
+import fs from 'fs';
 class SendMailService {
 
     private client: Transporter
@@ -22,11 +24,21 @@ class SendMailService {
         })
     }
 
-    async execute(to: string, subject: string, body: string) {
+    async execute(to: string, subject: string, variables: object, path: string) {
+
+        // Neste momento, faz a leitura do arquivo, atraevs do caminho recuperado acima.
+        const templateFileContent = fs.readFileSync(path).toString('utf8'); 
+
+        // Carrega o template no hbs compile;
+        const mailTemplateParse = handlebards.compile(templateFileContent);
+
+        //Recebe os parametros para ser substituido no template
+        const html = mailTemplateParse(variables);
+
         const message = await this.client.sendMail({
             to,
             subject,
-            html: body,
+            html,
             from: 'NPS <noreplay@nps.com.br'
         })
 
